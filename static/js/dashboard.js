@@ -696,15 +696,61 @@ function loadRecommendations() {
             const container = document.getElementById('recommendationsContainer');
             container.innerHTML = '';
             
-            data.recommendations.forEach(rec => {
+            // Add summary banner if available
+            if (data.summary) {
+                const summaryBanner = document.createElement('div');
+                summaryBanner.style.cssText = 'padding: 20px; background: linear-gradient(135deg, #00d4aa 0%, #00a88a 100%); border-radius: 10px; margin-bottom: 30px; color: white;';
+                summaryBanner.innerHTML = `
+                    <h3 style="margin: 0 0 10px 0; font-size: 22px;">✨ ${data.summary.message}</h3>
+                    <p style="margin: 0; font-size: 16px;">
+                        ${data.summary.total_recommendations} recommendations available • 
+                        ${data.summary.high_priority} high priority • 
+                        Potential reduction: ${data.summary.estimated_total_reduction}
+                    </p>
+                `;
+                container.appendChild(summaryBanner);
+            }
+            
+            data.recommendations.forEach((rec, index) => {
                 const card = document.createElement('div');
                 card.className = `recommendation-card priority-${rec.priority.toLowerCase()}`;
+                card.style.cursor = 'pointer';
+                
+                // Build actionable steps list
+                let stepsHTML = '';
+                if (rec.actionable_steps && rec.actionable_steps.length > 0) {
+                    stepsHTML = `
+                        <div class="steps-container" id="steps-${index}" style="display: none; margin-top: 15px; padding: 15px; background: rgba(0, 0, 0, 0.2); border-radius: 8px;">
+                            <h5 style="color: #00d4aa; margin: 0 0 10px 0;">🎯 Actionable Steps:</h5>
+                            <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
+                                ${rec.actionable_steps.map(step => `<li>${step}</li>`).join('')}
+                            </ul>
+                            ${rec.expected_reduction ? `<p style="margin: 15px 0 5px 0; color: #00d4aa;"><strong>📈 Impact:</strong> ${rec.expected_reduction}</p>` : ''}
+                            ${rec.cost ? `<p style="margin: 5px 0; color: #ffa502;"><strong>💰 Cost:</strong> ${rec.cost}</p>` : ''}
+                            ${rec.timeframe ? `<p style="margin: 5px 0; color: #0099ff;"><strong>⏱️ Timeframe:</strong> ${rec.timeframe}</p>` : ''}
+                        </div>
+                    `;
+                }
+                
                 card.innerHTML = `
-                    <h4>${rec.title}</h4>
-                    <p>${rec.description}</p>
-                    <span class="priority-badge priority-${rec.priority.toLowerCase()}">
-                        ${rec.priority} Priority
-                    </span>
+                    <div onclick="toggleSteps(${index})">
+                        <h4 style="margin-bottom: 10px;">${rec.title}</h4>
+                        <p style="margin-bottom: 10px;">${rec.description}</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <span class="priority-badge priority-${rec.priority.toLowerCase()}" style="margin-right: 10px;">
+                                    ${rec.priority} Priority
+                                </span>
+                                ${rec.impact ? `<span class="priority-badge" style="background: #0099ff; border-color: #0099ff;">
+                                    Impact: ${rec.impact}
+                                </span>` : ''}
+                            </div>
+                            <span style="color: #00d4aa; font-size: 14px;">
+                                ${rec.actionable_steps ? `⬇️ Click for ${rec.actionable_steps.length} action steps` : ''}
+                            </span>
+                        </div>
+                    </div>
+                    ${stepsHTML}
                 `;
                 container.appendChild(card);
             });
@@ -714,6 +760,18 @@ function loadRecommendations() {
             document.getElementById('recommendationsContainer').innerHTML = 
                 '<p class="loading">Error loading recommendations</p>';
         });
+}
+
+// Toggle steps visibility
+function toggleSteps(index) {
+    const stepsContainer = document.getElementById(`steps-${index}`);
+    if (stepsContainer) {
+        if (stepsContainer.style.display === 'none') {
+            stepsContainer.style.display = 'block';
+        } else {
+            stepsContainer.style.display = 'none';
+        }
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {

@@ -688,7 +688,7 @@ body {
 }
 
 .hint {
-  color: var(--text-secondary);
+  color: black;
   font-size: 0.9rem;
   margin-top: 0.5rem;
   padding: 0.5rem;

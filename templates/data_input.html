@@ -170,17 +170,50 @@ Analyzer{% endblock %} {% block content %}
 
     <div class="mt-4">
       <h4><i class="fas fa-info-circle"></i> CSV Format Template</h4>
-      <pre class="csv-sample">
-date,source_type,raw_value,unit
-2025-06-15,electricity,130000,kWh
-2025-06-15,bus_diesel,5500,Liters
-2025-06-15,canteen_lpg,850,kg
-2025-06-15,waste_landfill,2300,kg</pre
-      >
-      <p class="hint">
+      <p class="hint" style="margin-bottom: 15px;">
         <i class="fas fa-exclamation-circle"></i>
         Required columns (in order):
         <code>date,source_type,raw_value,unit</code>
+      </p>
+      <table class="emission-table" style="margin-top: 10px;">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Source Type</th>
+            <th>Raw Value</th>
+            <th>Unit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2025-06-15</td>
+            <td>electricity</td>
+            <td>130000</td>
+            <td>kWh</td>
+          </tr>
+          <tr>
+            <td>2025-06-15</td>
+            <td>bus_diesel</td>
+            <td>5500</td>
+            <td>Liters</td>
+          </tr>
+          <tr>
+            <td>2025-06-15</td>
+            <td>canteen_lpg</td>
+            <td>850</td>
+            <td>kg</td>
+          </tr>
+          <tr>
+            <td>2025-06-15</td>
+            <td>waste_landfill</td>
+            <td>2300</td>
+            <td>kg</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="hint" style="margin-top: 15px; color: #000000;">
+        <i class="fas fa-download"></i>
+        Copy this format exactly when creating your CSV file
       </p>
     </div>
   </div>

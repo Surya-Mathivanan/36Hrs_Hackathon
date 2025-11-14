@@ -614,6 +614,8 @@ def get_recommendations():
     cursor = None
     try:
         cursor = connection.cursor(dictionary=True)
+        
+        # Get emission breakdown
         query = """
             SELECT 
                 a.source_type,
@@ -625,49 +627,208 @@ def get_recommendations():
         """
         cursor.execute(query)
         results = cursor.fetchall()
+        
+        # Get human emissions data
+        cursor.execute("""
+            SELECT 
+                SUM(total_count * 1.0 / 1000) as total_emissions,
+                AVG(total_count) as avg_population
+            FROM human_population
+        """)
+        human_stats = cursor.fetchone()
+        human_emissions = float(human_stats['total_emissions'] or 0)
+        avg_population = int(human_stats['avg_population'] or 0)
 
         recommendations = []
+        
+        # Source-specific recommendations
         if results:
             top_source = results[0]['source_type']
+            top_emissions = results[0]['total_emissions']
 
             if top_source == 'electricity':
                 recommendations.append({
-                    'title': 'Focus on Energy Efficiency',
-                    'description': 'Electricity is your biggest emission source. Consider switching to LED lighting and installing solar panels.',
-                    'priority': 'High'
+                'title': '⚡ Electricity: Your #1 Emission Source',
+                'description': f'Electricity is your largest controllable emission source, contributing {top_emissions:.2f} tonnes CO₂. This is primarily driven by high-consumption devices like air conditioning, lighting, and lab equipment. Tackling this area is the single highest-impact action your campus can take.',
+                'priority': 'High',
+                'impact': 'High',
+                'actionable_steps': [
+                    'Conduct a professional energy audit to identify specific "hotspots" of wastage.',
+                    'Replace all traditional bulbs (fluorescent, incandescent) with high-efficiency LED lighting (saves 75% energy per bulb).',
+                    'Install motion sensors and timers in corridors, washrooms, and meeting rooms so lights are only on when needed.',
+                    'Upgrade old air conditioners to new 5-star rated inverter models (can reduce AC energy use by 30-50%).',
+                    'Set a campus-wide AC temperature policy (e.g., 24°C) to prevent overuse.',
+                    'Aggressively pursue rooftop solar panel installation, starting with main academic blocks and hostels.',
+                    'Implement a "Computers Off" policy at night, enforcing shutdown rather than sleep mode.',
+                    'Install smart power strips on workstation clusters to completely cut power to peripherals (printers, monitors) after hours and eliminate phantom loads.'
+                ],
+                'expected_reduction': '30-50% reduction in electricity-based emissions',
+                'cost': 'Medium to High (Initial) | High ROI (2-5 years)',
+                'timeframe': '6-18 months for full implementation'
                 })
+            
             elif top_source == 'bus_diesel':
                 recommendations.append({
-                    'title': 'Promote Green Transportation',
-                    'description': 'Transport emissions are high. Encourage carpooling, cycling, and consider electric buses.',
-                    'priority': 'High'
+                'title': '🚌 Transportation: High Carbon Footprint',
+                'description': f'Campus-owned diesel transport contributes {top_emissions:.2f} tonnes CO₂. These vehicles are a major source of not only CO2 but also harmful local air pollutants (PM2.5). A planned transition to cleaner transport is crucial for both carbon goals and campus health.',
+                'priority': 'High',
+                'impact': 'High',
+                'actionable_steps': [
+                    'Develop a 5-year plan to phase out diesel buses and replace them with electric buses.',
+                    'Install EV charging stations in parking areas to support the transition (for buses, staff, and student vehicles).',
+                    'Optimize bus routes using software to reduce total kilometers traveled and minimize engine idle time.',
+                    'Implement a campus bike-sharing program with dedicated bike racks at key locations (hostels, canteen, main gate).',
+                    'Create dedicated, safe cycling lanes within the campus to encourage biking over private vehicles.',
+                    'Promote a carpooling platform/app for students and staff commuting from the city.',
+                    'Enforce a "No-Idling" zone policy for all vehicles on campus.',
+                    'Partner with public transport authorities to improve bus frequency to the campus gate.'
+                ],
+                'expected_reduction': '40-60% reduction in transport emissions (up to 90% with full EV transition)',
+                'cost': 'High (Vehicle purchase) | Medium (Fuel savings offset cost)',
+                'timeframe': '1-3 years for fleet transition'
                 })
+            
             elif top_source == 'canteen_lpg':
                 recommendations.append({
-                    'title': 'Optimize Canteen Operations',
-                    'description': 'Canteen fuel usage is significant. Consider induction cooking or solar cookers.',
-                    'priority': 'Medium'
+                'title': '🍳 Canteen: Optimize Cooking Operations',
+                'description': f'Canteen LPG (a fossil fuel) contributes {top_emissions:.2f} tonnes CO₂. This is a consistent, daily emission source. Modern, efficient electric alternatives like induction are not only cleaner (especially when paired with solar) but also safer and improve indoor air quality for kitchen staff.',
+                'priority': 'Medium',
+                'impact': 'Medium',
+                'actionable_steps': [
+                    'Phase out LPG stoves and replace them with commercial-grade induction cooktops, which are ~85% efficient (vs. LPG at ~40%).',
+                    'Install solar cookers or solar water heating systems for large-scale water boiling (e.g., for rice, tea).',
+                    'Utilize pressure cookers for items like dals and legumes to reduce cooking time by up to 70%.',
+                    'Implement a "Menu Engineering" policy to batch-cook popular items, reducing stop-start energy waste.',
+                    'Conduct regular maintenance on all kitchen equipment (gaskets, burners) to ensure optimal efficiency.',
+                    'Explore setting up a campus biogas plant to convert food waste into methane for cooking, creating a circular system.',
+                    'Source produce from local farms to reduce the "Scope 3" emissions embedded in your food supply chain.'
+                ],
+                'expected_reduction': '25-40% reduction in cooking-related emissions',
+                'cost': 'Low to Medium',
+                'timeframe': '3-9 months'
                 })
+            
             elif top_source == 'waste_landfill':
                 recommendations.append({
-                    'title': 'Improve Waste Management',
-                    'description': 'Waste emissions are high. Implement composting and recycling programs.',
-                    'priority': 'High'
+                'title': '♻️ Waste: Implement Zero-Waste Campus',
+                'description': f'Waste sent to landfills generates {top_emissions:.2f} tonnes CO₂ (as methane). Methane (CH4) is a greenhouse gas over 25 times more potent than CO₂. A "Zero-Waste" approach, focusing on the 3 R\'s (Reduce, Reuse, Recycle), can drastically cut this.',
+                'priority': 'High',
+                'impact': 'High',
+                'actionable_steps': [
+                    'Conduct a "waste audit" (sorting a day\'s waste) to identify your main waste streams (e.g., plastic, paper, food).',
+                    'Implement a mandatory 3-bin segregation system campus-wide: Organic (food), Recyclable (paper, plastic, metal), and Landfill (other).',
+                    'Start an on-campus composting program for all food waste from canteens and hostels. Use the compost for campus landscaping.',
+                    'Aggressively ban all single-use plastics (cups, plates, straws) in canteens and for all campus events.',
+                    'Install water refill stations across the campus to eliminate the need for single-use plastic water bottles.',
+                    'Set up a "Reuse Store" where students can donate or take items like books, electronics, and clothes at the end of the semester.',
+                    'Partner with local recycling vendors for efficient collection of segregated paper, plastic, and e-waste.',
+                    'Set double-sided printing as the default on all campus computers and printers.'
+                ],
+                'expected_reduction': '50-70% reduction in landfill-bound waste and associated emissions',
+                'cost': 'Low (Primarily operational and awareness-based)',
+                'timeframe': '2-4 months to implement fully'
                 })
 
+        # Human emissions recommendations
+        if human_emissions > 0:
             recommendations.append({
-                'title': 'Regular Monitoring',
-                'description': 'Continue tracking emissions data monthly to identify trends and measure improvement.',
-                'priority': 'Medium'
+                'title': '👥 Human CO₂: An Indirect Factor',
+            'description': f'The campus population (avg. {avg_population} people) contributes {human_emissions:.2f} tonnes CO₂ from respiration. This is a natural biological process and part of the "short-term carbon cycle." Unlike burning fossil fuels (which releases "long-term" carbon), this is not a target for direct reduction. However, a larger population *indirectly* increases emissions from energy, transport, and waste.',
+            'priority': 'Low',
+            'impact': 'Low (Natural Process)',
+            'actionable_steps': [
+                'Note: Do not focus on reducing this number directly. It is a natural process.',
+                'Use this population data to inform indirect emission strategies (e.g., "emissions per student").',
+                'Implement hybrid learning/work models to slightly reduce daily on-campus density, which in turn cuts transport and energy use.',
+                'Stagger class and lab timings to prevent peak-hour congestion for both transport and canteen services.',
+                'Focus on reducing the *per-person* carbon footprint (total emissions / avg_population) rather than the respiration footprint.'
+            ],
+            'expected_reduction': 'N/A (Focus is on indirect reductions)',
+            'cost': 'N/A',
+            'timeframe': 'Ongoing'
             })
 
-            recommendations.append({
-                'title': 'Campus Awareness Campaign',
-                'description': 'Educate students and staff about sustainable practices and carbon footprint reduction.',
-                'priority': 'Low'
-            })
+        # General recommendations (always included)
+        recommendations.extend([
+            {
+                'title': '📊 Data-Driven Decision Making',
+            'description': 'You cannot manage what you do not measure. This analyzer provides the real-time data needed to move from guessing to targeted, effective action. Use this data to prove what works, justify investments (like solar), and hold departments accountable.',
+            'priority': 'High',
+            'impact': 'High (Enabler)',
+            'actionable_steps': [
+                'Monitor this dashboard daily. Identify any sudden spikes and investigate the cause.',
+                'Set a clear, public monthly reduction target (e.g., "Reduce electricity use by 5% this month").',
+                'Generate quarterly reports from this data to share with management and the student council.',
+                'Use the data to benchmark your campus against other institutions or national averages.',
+                'Create department-level dashboards to foster friendly competition on reduction goals.'
+            ],
+            'expected_reduction': 'Enables an additional 20-30% reduction through targeted strategies',
+            'cost': 'Free (using this platform)',
+                'timeframe': 'Ongoing'
+            },
+            {
+                'title': '🌱 Green Campus Initiative',
+            'description': 'Technology and infrastructure are only half the solution. A successful carbon reduction plan requires buy-in and active participation from every student and staff member. A "Green Campus" culture makes sustainability the default, not the exception.',
+            'priority': 'Medium',
+            'impact': 'High (Long-term)',
+            'actionable_steps': [
+                'Form a "Green Team" or "Sustainability Council" with student and staff volunteers from all departments.',
+                'Conduct monthly awareness campaigns, workshops, and guest lectures on sustainability topics.',
+                'Organize large-scale tree plantation drives on campus (focus on native species) to create a carbon sink.',
+                'Display real-time emission data from this dashboard on public screens in the canteen and library.',
+                'Integrate sustainability modules into first-year orientation and relevant academic courses.',
+                'Partner with academic departments to use the campus as a "Living Lab" for sustainability research projects.',
+                'Reward departments and hostels that achieve the highest emission reductions each semester.'
+            ],
+            'expected_reduction': '15-25% reduction through behavioral change',
+            'cost': 'Low',
+                'timeframe': '3-6 months to establish'
+            },
+            {
+                'title': '🏛️ Infrastructure Upgrades (Long-Term Vision)',
+            'description': 'These are high-cost, high-impact capital projects that lock in sustainability and savings for decades. They should be integrated into the campus\'s long-term master plan and budget cycle.',
+            'priority': 'Medium',
+            'impact': 'Very High',
+            'actionable_steps': [
+                'Develop a "Green Building" policy for all new constructions, targeting GRIHA or LEED certification.',
+                'Install campus-wide rainwater harvesting systems to reduce reliance on municipal water and save energy on pumping.',
+                'Upgrade to centralized, energy-efficient HVAC systems with smart zoning controls.',
+                'Create green roofs and vertical gardens on buildings to improve insulation and reduce cooling loads.',
+                'Install smart meters for electricity and water at the building-level for granular data tracking.',
+                'Retrofit old buildings with better insulation and double-glazed windows to reduce heat gain.'
+            ],
+            'expected_reduction': '30-40% long-term reduction on new/retrofitted infrastructure',
+            'cost': 'High (Capital Expenditure)',
+                'timeframe': '1-5 years (Phased)'
+            },
+            {
+                'title': '⭐ Quick Wins: Immediate Actions',
+            'description': 'Build momentum and show immediate progress with these simple, low-cost actions. These wins are highly visible and help build the cultural support needed for larger, more expensive projects.',
+            'priority': 'High',
+            'impact': 'Medium',
+            'actionable_steps': [
+                'TODAY: Mandate that all classroom projectors, lights, and fans are turned off by the last person leaving.',
+                'THIS WEEK: Set all network printers to double-sided printing by default.',
+                'THIS WEEK: Launch a "phantom load" campaign, encouraging unplugging chargers and devices when not in use.',
+                'THIS MONTH: Place "Save Energy / Save Water" stickers on all switches and taps.',
+                'THIS MONTH: Designate student "Energy Monitors" for each floor/department to ensure compliance after hours.',
+                'THIS MONTH: Start the paper recycling program by placing collection boxes in all offices and classrooms.'
+            ],
+            'expected_reduction': '10-15% immediate reduction from low-hanging fruit',
+            'cost': 'Very Low',
+                'timeframe': 'Immediate to 1 month'
+            }
+        ])
 
-        return jsonify({'recommendations': recommendations})
+        return jsonify({
+            'recommendations': recommendations,
+            'summary': {
+                'total_recommendations': len(recommendations),
+                'high_priority': len([r for r in recommendations if r['priority'] == 'High']),
+                'estimated_total_reduction': '50-70% achievable with full implementation',
+                'message': 'Start with "Quick Wins" and "High Priority" items for maximum immediate impact!'
+            }
+        })
     except Exception as e:
         logger.exception("Error fetching recommendations")
         return jsonify({'error': 'Internal error'}), 500
