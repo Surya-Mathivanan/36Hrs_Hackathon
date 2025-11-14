@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Human Emissions Data</title>
+</head>
+<body>
+    <h1>Human Emissions Data Test</h1>
+    <div id="output"></div>
+
+    <script>
+        fetch('/api/dashboard?start_date=2025-05-01&end_date=2025-11-14')
+            .then(response => response.json())
+            .then(data => {
+                const output = document.getElementById('output');
+                
+                if (data.human_emissions) {
+                    const he = data.human_emissions;
+                    output.innerHTML = `
+                        <h2>✅ Human Emissions Data Found!</h2>
+                        <p><strong>Total Emissions:</strong> ${he.total_emissions} tonnes</p>
+                        <p><strong>Avg Population:</strong> ${he.avg_total_count} people</p>
+                        <p><strong>Avg Students:</strong> ${he.avg_student_count}</p>
+                        <p><strong>Avg Staff:</strong> ${he.avg_staff_count}</p>
+                        <p><strong>Daily Trend Points:</strong> ${he.daily_trend.length}</p>
+                        <p><strong>Weekly Trend Points:</strong> ${he.weekly_trend.length}</p>
+                        <p><strong>Monthly Trend Points:</strong> ${he.monthly_trend.length}</p>
+                        <p><strong>Population Data Points:</strong> ${he.population_data.length}</p>
+                        
+                        <h3>Sample Data:</h3>
+                        <pre>${JSON.stringify(he.daily_trend.slice(0, 3), null, 2)}</pre>
+                    `;
+                } else {
+                    output.innerHTML = '<h2>❌ No human_emissions data found</h2>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('output').innerHTML = 
+                    `<h2>❌ Error: ${error}</h2>`;
+            });
+    </script>
+</body>
+</html>

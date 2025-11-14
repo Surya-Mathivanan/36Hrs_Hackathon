@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Campus Carbon Footprint Analyzer{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h2>Carbon Emissions Dashboard</h2>
+        <div class="date-selector">
+            <label for="dateRange">Time Period:</label>
+            <select id="dateRange" onchange="updateDashboard()">
+                <option value="7">Last Week</option>
+                <option value="30">Last 30 Days</option>
+                <option value="90">Last 3 Months</option>
+                <option value="180">Last 6 Months</option>
+                <option value="365" selected>Last Year</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="kpi-container">
+        <div class="kpi-card">
+            <div class="kpi-icon">📊</div>
+            <div class="kpi-content">
+                <h3>Total Emissions</h3>
+                <p class="kpi-value" id="totalEmissions">--</p>
+                <p class="kpi-unit">Tonnes CO₂e</p>
+            </div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-icon">📈</div>
+            <div class="kpi-content">
+                <h3>Change</h3>
+                <p class="kpi-value" id="percentChange">--</p>
+                <p class="kpi-unit">vs. Previous Period</p>
+            </div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-icon">🎯</div>
+            <div class="kpi-content">
+                <h3>Biggest Source</h3>
+                <p class="kpi-value" id="biggestSource">--</p>
+                <p class="kpi-unit" id="biggestSourcePercent">--</p>
+            </div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-icon">⚡</div>
+            <div class="kpi-content">
+                <h3>Total Energy</h3>
+                <p class="kpi-value" id="energySaved">--</p>
+                <p class="kpi-unit">kWh Consumed</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="charts-container">
+        <div class="chart-card chart-large">
+            <h3>Total Emissions Trend</h3>
+            <canvas id="trendChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h3>Monthly Comparison</h3>
+            <canvas id="monthlyBarChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h3>Yearly Comparison</h3>
+            <canvas id="yearlyBarChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h3>Weekly Comparison</h3>
+            <canvas id="weeklyBarChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h3>Emissions Breakdown by Source</h3>
+            <canvas id="donutChart"></canvas>
+        </div>
+    </div>
+
+    <!-- CORE FEATURE: Human Emissions Section -->
+    <div class="human-emissions-section" style="margin-top: 40px; padding: 30px; background: linear-gradient(135deg, #1e3a5f 0%, #2d5a7b 100%); border-radius: 12px; border: 2px solid #00d4aa;">
+        <div class="section-header" style="display: flex; align-items: center; margin-bottom: 30px;">
+            <div style="font-size: 48px; margin-right: 20px;">👥</div>
+            <div>
+                <h2 style="color: #00d4aa; margin: 0; font-size: 28px;">Human CO₂ Emissions (CORE FEATURE)</h2>
+                <p style="color: #b0b3b8; margin: 5px 0 0 0;">Campus population and their carbon footprint</p>
+            </div>
+        </div>
+
+        <!-- Human KPIs -->
+        <div class="kpi-container" style="margin-bottom: 30px;">
+            <div class="kpi-card" style="background: rgba(0, 212, 170, 0.1); border-color: #00d4aa;">
+                <div class="kpi-icon">👥</div>
+                <div class="kpi-content">
+                    <h3>Total Population</h3>
+                    <p class="kpi-value" id="humanTotalCount">--</p>
+                    <p class="kpi-unit">People on Campus</p>
+                </div>
+            </div>
+            
+            <div class="kpi-card" style="background: rgba(0, 212, 170, 0.1); border-color: #00d4aa;">
+                <div class="kpi-icon">🎓</div>
+                <div class="kpi-content">
+                    <h3>Total Students</h3>
+                    <p class="kpi-value" id="humanStudentCount">--</p>
+                    <p class="kpi-unit">Students</p>
+                </div>
+            </div>
+            
+            <div class="kpi-card" style="background: rgba(0, 212, 170, 0.1); border-color: #00d4aa;">
+                <div class="kpi-icon">👨‍🏫</div>
+                <div class="kpi-content">
+                    <h3>Total Staff</h3>
+                    <p class="kpi-value" id="humanStaffCount">--</p>
+                    <p class="kpi-unit">Staff Members</p>
+                </div>
+            </div>
+            
+            <div class="kpi-card" style="background: rgba(0, 212, 170, 0.1); border-color: #00d4aa;">
+                <div class="kpi-icon">💨</div>
+                <div class="kpi-content">
+                    <h3>Human CO₂</h3>
+                    <p class="kpi-value" id="humanTotalEmissions">--</p>
+                    <p class="kpi-unit">Tonnes CO₂e</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="recommendations-section">
+        <h3>🌱 Recommendations for Reducing Carbon Footprint</h3>
+        <div id="recommendationsContainer" class="recommendations-container">
+            <p class="loading">Loading recommendations...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}?v=4"></script>
+{% endblock %}

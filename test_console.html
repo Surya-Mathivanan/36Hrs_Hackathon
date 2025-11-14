@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Human Emissions</title>
+</head>
+<body>
+    <h1>Test Human Emissions Data Flow</h1>
+    <div id="humanTotalEmissions">--</div>
+    
+    <script>
+        // Test fetch from API
+        fetch('/api/dashboard?start_date=2024-01-01&end_date=2025-12-31')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Full API Response:', data);
+                console.log('Human Emissions Data:', data.human_emissions);
+                
+                if (data.human_emissions) {
+                    const emissions = (data.human_emissions.total_emissions || 0).toFixed(2);
+                    console.log('Setting humanTotalEmissions to:', emissions);
+                    document.getElementById('humanTotalEmissions').textContent = emissions;
+                    console.log('Element text after setting:', document.getElementById('humanTotalEmissions').textContent);
+                } else {
+                    console.error('❌ No human_emissions data in response!');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching dashboard data:', error);
+            });
+    </script>
+</body>
+</html>

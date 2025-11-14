@@ -1,0 +1,190 @@
+{% extends "base.html" %} {% block title %}Data Input - Campus Carbon Footprint
+Analyzer{% endblock %} {% block content %}
+<div class="data-input-container">
+  <h2>Add Carbon Footprint Data</h2>
+  <p class="page-subtitle">
+    Enter daily consumption data for carbon footprint analysis
+  </p>
+
+  <div class="input-card">
+    <form id="dataForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="date">Date *</label>
+          <input type="date" id="date" name="date" required />
+        </div>
+
+        <div class="form-group">
+          <label for="source_type">Source Type *</label>
+          <select
+            id="source_type"
+            name="source_type"
+            required
+            onchange="updateUnit()"
+          >
+            <option value="">Select a source</option>
+            <option value="electricity">Electricity</option>
+            <option value="bus_diesel">Bus Diesel</option>
+            <option value="canteen_lpg">Canteen LPG</option>
+            <option value="waste_landfill">Waste (Landfill)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="raw_value">Raw Value *</label>
+          <input
+            type="number"
+            id="raw_value"
+            name="raw_value"
+            step="0.01"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="unit">Unit *</label>
+          <select id="unit" name="unit" required>
+            <option value="">Select unit</option>
+            <option value="kWh">kWh (Kilowatt-hour)</option>
+            <option value="Liters">Liters</option>
+            <option value="kg">kg (Kilograms)</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="messageContainer"></div>
+
+      <button type="submit" class="btn-primary">Add Data</button>
+    </form>
+  </div>
+
+  <!-- CORE FEATURE: Human Population Data Input -->
+  <div class="input-card" style="background: linear-gradient(135deg, #1e3a5f 0%, #2d5a7b 100%); border: 2px solid #00d4aa;">
+    <h3 style="color: #00d4aa;"><i class="fas fa-users"></i> Campus Population Data (CORE FEATURE)</h3>
+    <p class="page-subtitle" style="color: #e4e6eb;">
+      Enter daily student and staff count - the main source of campus CO₂ emissions
+    </p>
+
+    <form id="humanDataForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="human_date">Date *</label>
+          <input type="date" id="human_date" name="date" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="student_count">Student Count *</label>
+          <input
+            type="number"
+            id="student_count"
+            name="student_count"
+            min="0"
+            required
+            placeholder="e.g., 5000"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="staff_count">Staff Count *</label>
+          <input
+            type="number"
+            id="staff_count"
+            name="staff_count"
+            min="0"
+            required
+            placeholder="e.g., 500"
+          />
+        </div>
+      </div>
+
+      <div id="humanMessageContainer"></div>
+
+      <button type="submit" class="btn-primary" style="background: #00d4aa; border-color: #00d4aa;">
+        <i class="fas fa-user-plus"></i> Add Population Data
+      </button>
+    </form>
+
+    <div class="info-card" style="margin-top: 20px; background: rgba(0, 212, 170, 0.1); border-color: #00d4aa;">
+      <p style="color: #e4e6eb; margin: 0;">
+        <i class="fas fa-info-circle"></i> <strong>Human CO₂ Emission Factor:</strong> 1.0 kg CO₂e per person per day<br>
+        <small>This accounts for human respiration and metabolic processes during campus presence.</small>
+      </p>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <h3>Emission Factors Reference</h3>
+    <table class="emission-table">
+      <thead>
+        <tr>
+          <th>Source Type</th>
+          <th>Unit</th>
+          <th>Emission Factor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Electricity</td>
+          <td>kWh</td>
+          <td>0.708 kg CO₂e/kWh</td>
+        </tr>
+        <tr>
+          <td>Bus Diesel</td>
+          <td>Liters</td>
+          <td>2.68 kg CO₂e/Liter</td>
+        </tr>
+        <tr>
+          <td>Canteen LPG</td>
+          <td>kg</td>
+          <td>2.93 kg CO₂e/kg</td>
+        </tr>
+        <tr>
+          <td>Waste (Landfill)</td>
+          <td>kg</td>
+          <td>1.25 kg CO₂e/kg</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CSV Bulk Upload -->
+  <div class="input-card">
+    <h3><i class="fas fa-file-csv"></i> CSV Bulk Upload (Admin)</h3>
+    <p class="text-secondary">
+      Upload a CSV file with multiple rows to insert activity records in bulk.
+    </p>
+
+    <div class="csv-upload">
+      <label for="csvFileInput">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <span>Drop your CSV file here or click to browse</span>
+        <input type="file" id="csvFileInput" accept=".csv" />
+      </label>
+    </div>
+
+    <div id="csvMessageContainer"></div>
+
+    <div class="mt-4">
+      <h4><i class="fas fa-info-circle"></i> CSV Format Template</h4>
+      <pre class="csv-sample">
+date,source_type,raw_value,unit
+2025-06-15,electricity,130000,kWh
+2025-06-15,bus_diesel,5500,Liters
+2025-06-15,canteen_lpg,850,kg
+2025-06-15,waste_landfill,2300,kg</pre
+      >
+      <p class="hint">
+        <i class="fas fa-exclamation-circle"></i>
+        Required columns (in order):
+        <code>date,source_type,raw_value,unit</code>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script src="{{ url_for('static', filename='js/data_input.js') }}?v=2"></script>
+{% endblock %}
