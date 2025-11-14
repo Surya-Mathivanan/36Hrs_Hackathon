@@ -97,13 +97,21 @@ if (humanForm) {
 
         if (data.message) {
           const details = data.data || {};
+          const cumulative = data.cumulative_stats || {};
           messageContainer.innerHTML = `
             <div class="success-message">
               <strong>${data.message}</strong><br>
-              <small>
-                Total Population: ${details.total_count || 0} people<br>
-                Estimated CO₂ Emissions: ${details.estimated_emissions_tonnes || 0} tonnes
-              </small>
+              <div style="margin-top: 10px; padding: 10px; background: rgba(0, 212, 170, 0.1); border-radius: 5px;">
+                <strong>📊 This Day:</strong><br>
+                Population: ${details.total_count || 0} people<br>
+                CO₂ Emissions: ${details.this_day_emissions_tonnes || 0} tonnes<br>
+                <hr style="margin: 10px 0; border-color: rgba(0, 212, 170, 0.3);">
+                <strong>🌍 Cumulative Totals:</strong><br>
+                Total Emissions: <strong style="color: #00d4aa; font-size: 1.2em;">${cumulative.total_emissions_tonnes || 0} tonnes CO₂</strong><br>
+                Total Records: ${cumulative.total_records || 0} days<br>
+                Avg Population: ${cumulative.average_population || 0} people<br>
+                (${cumulative.average_students || 0} students + ${cumulative.average_staff || 0} staff)
+              </div>
             </div>
           `;
           humanForm.reset();

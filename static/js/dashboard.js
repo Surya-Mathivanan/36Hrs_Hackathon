@@ -407,6 +407,34 @@ function updateHumanKPIs(humanData) {
     document.getElementById('humanTotalEmissions').textContent = emissions;
 }
 
+// Update cumulative statistics (all-time totals)
+function updateCumulativeStats() {
+    fetch('/api/human_cumulative_stats')
+        .then(response => response.json())
+        .then(data => {
+            console.log('📊 Cumulative stats:', data);
+            
+            if (data.total_emissions !== undefined) {
+                document.getElementById('cumulativeTotalEmissions').textContent = data.total_emissions.toFixed(2);
+            }
+            if (data.total_records !== undefined) {
+                document.getElementById('cumulativeDays').textContent = data.total_records;
+            }
+            if (data.average_population !== undefined) {
+                document.getElementById('cumulativeAvgPopulation').textContent = data.average_population;
+            }
+            if (data.average_students !== undefined) {
+                document.getElementById('cumulativeAvgStudents').textContent = data.average_students;
+            }
+            if (data.average_staff !== undefined) {
+                document.getElementById('cumulativeAvgStaff').textContent = data.average_staff;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching cumulative stats:', error);
+        });
+}
+
 function updateHumanTrendChart(humanData, days) {
     const canvas = document.getElementById('humanTrendChart');
     if (!canvas) return;
@@ -691,4 +719,5 @@ function loadRecommendations() {
 document.addEventListener('DOMContentLoaded', function() {
     updateDashboard();
     loadRecommendations();
+    updateCumulativeStats();  // Load all-time cumulative statistics
 });

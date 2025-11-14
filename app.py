@@ -315,7 +315,7 @@ def add_human_data():
 
     cursor = None
     try:
-        cursor = connection.cursor()
+        cursor = connection.cursor(dictionary=True)
         cursor.execute(
             """INSERT INTO human_population (date, student_count, staff_count) 
                VALUES (%s, %s, %s)
@@ -331,6 +331,22 @@ def add_human_data():
         emissions_kg = total_people * 1.0  # 1 kg CO2 per person per day
         emissions_tonnes = emissions_kg / 1000
         
+        # Get total cumulative emissions from all records
+        cursor.execute("""
+            SELECT 
+                SUM(total_count * 1.0 / 1000) as total_emissions,
+                COUNT(*) as record_count,
+                AVG(student_count) as avg_students,
+                AVG(staff_count) as avg_staff
+            FROM human_population
+        """)
+        stats = cursor.fetchone()
+        
+        total_emissions_all = float(stats['total_emissions'] or 0)
+        record_count = stats['record_count'] or 0
+        avg_students = int(stats['avg_students'] or 0)
+        avg_staff = int(stats['avg_staff'] or 0)
+        
         return jsonify({
             'message': 'Human population data added successfully',
             'data': {
@@ -338,7 +354,14 @@ def add_human_data():
                 'student_count': student_count,
                 'staff_count': staff_count,
                 'total_count': total_people,
-                'estimated_emissions_tonnes': round(emissions_tonnes, 3)
+                'this_day_emissions_tonnes': round(emissions_tonnes, 3)
+            },
+            'cumulative_stats': {
+                'total_emissions_tonnes': round(total_emissions_all, 2),
+                'total_records': record_count,
+                'average_students': avg_students,
+                'average_staff': avg_staff,
+                'average_population': avg_students + avg_staff
             }
         }), 201
     except Exception as e:
@@ -656,6 +679,51 @@ def get_recommendations():
         except Exception:
             pass
 
+@app.route('/api/human_cumulative_stats', methods=['GET'])
+def get_human_cumulative_stats():
+    """
+    Get all-time cumulative statistics for human emissions.
+    Returns total emissions, record count, and averages across ALL data.
+    """
+    connection = get_db_connection()
+    if not connection:
+        return jsonify({'error': 'Database connection error'}), 500
+
+    cursor = None
+    try:
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT 
+                SUM(total_count * 1.0 / 1000) as total_emissions,
+                COUNT(*) as record_count,
+                AVG(student_count) as avg_students,
+                AVG(staff_count) as avg_staff
+            FROM human_population
+        """)
+        stats = cursor.fetchone()
+        
+        total_emissions = float(stats['total_emissions'] or 0)
+        record_count = stats['record_count'] or 0
+        avg_students = int(stats['avg_students'] or 0)
+        avg_staff = int(stats['avg_staff'] or 0)
+        
+        return jsonify({
+            'total_emissions': round(total_emissions, 2),
+            'total_records': record_count,
+            'average_students': avg_students,
+            'average_staff': avg_staff,
+            'average_population': avg_students + avg_staff
+        })
+    except Exception as e:
+        logger.exception("Error fetching cumulative stats")
+        return jsonify({'error': 'Internal error'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        try:
+            connection.close()
+        except Exception:
+            pass
 
 @app.route('/api/upload_csv', methods=['POST'])
 @api_token_required
