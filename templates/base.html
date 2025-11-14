@@ -12,6 +12,10 @@
     />
     <link
       rel="stylesheet"
+      href="{{ url_for('static', filename='css/holo-toggle.css') }}"
+    />
+    <link
+      rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -20,14 +24,14 @@
   <body>
     <!-- Sidebar -->
     <aside class="sidebar">
-      <button class="sidebar-toggle" id="sidebarToggle">
-        <i class="fas fa-bars"></i>
-      </button>
-
       <div class="sidebar-brand">
         <i class="fas fa-leaf fa-2x"></i>
         <span class="brand-text">Carbon Footprint</span>
       </div>
+
+      <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+      </button>
 
       <nav class="nav-menu">
         <a href="{{ url_for('index') }}" class="nav-link">
@@ -50,6 +54,56 @@
         </a>
         {% endif %}
       </nav>
+
+      <!-- Theme Toggle Switch -->
+      <div class="toggle-container">
+        <div class="toggle-wrap">
+          <input class="toggle-input" id="holo-toggle" type="checkbox" />
+          <label class="toggle-track" for="holo-toggle">
+            <div class="track-lines">
+              <div class="track-line"></div>
+            </div>
+
+            <div class="toggle-thumb">
+              <div class="thumb-core"></div>
+              <div class="thumb-inner"></div>
+              <div class="thumb-scan"></div>
+              <div class="thumb-particles">
+                <div class="thumb-particle"></div>
+                <div class="thumb-particle"></div>
+                <div class="thumb-particle"></div>
+                <div class="thumb-particle"></div>
+                <div class="thumb-particle"></div>
+              </div>
+            </div>
+
+            <div class="toggle-data">
+              <div class="data-text off">OFF</div>
+              <div class="data-text on">ON</div>
+              <div class="status-indicator off"></div>
+              <div class="status-indicator on"></div>
+            </div>
+
+            <div class="energy-rings">
+              <div class="energy-ring"></div>
+              <div class="energy-ring"></div>
+              <div class="energy-ring"></div>
+            </div>
+
+            <div class="interface-lines">
+              <div class="interface-line"></div>
+              <div class="interface-line"></div>
+              <div class="interface-line"></div>
+              <div class="interface-line"></div>
+              <div class="interface-line"></div>
+              <div class="interface-line"></div>
+            </div>
+
+            <div class="toggle-reflection"></div>
+            <div class="holo-glow"></div>
+          </label>
+        </div>
+      </div>
     </aside>
 
     <div class="main-content">
@@ -89,6 +143,34 @@
           setTimeout(function () {
             window.dispatchEvent(new Event("resize"));
           }, 320);
+        });
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById("holo-toggle");
+        const body = document.body;
+
+        // Check localStorage for saved theme
+        const savedTheme = localStorage.getItem("theme") || "dark";
+        if (savedTheme === "light") {
+          body.classList.add("light-mode");
+          themeToggle.checked = true;
+        }
+
+        themeToggle.addEventListener("change", function () {
+          body.classList.toggle("light-mode");
+          
+          if (body.classList.contains("light-mode")) {
+            // Switch to light mode
+            localStorage.setItem("theme", "light");
+          } else {
+            // Switch to dark mode
+            localStorage.setItem("theme", "dark");
+          }
+
+          // Trigger chart redraw if on dashboard
+          setTimeout(function () {
+            window.dispatchEvent(new Event("resize"));
+          }, 100);
         });
       });
     </script>

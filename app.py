@@ -142,7 +142,11 @@ def login():
             logger.info(f"User not found for username='{username}'")
             return render_template('login.html', error='Invalid credentials')
 
-        if user and user['password'] == password:
+        # Check both plain text and hashed passwords
+        import hashlib
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        
+        if user and (user['password'] == password or user['password'] == hashed_password):
             session['user_id'] = user['id']
             session['username'] = user['username']
             return redirect(url_for('data_input'))
@@ -195,7 +199,11 @@ def api_login():
         except Exception:
             pass
 
-    if user and user['password'] == password:
+    # Check both plain text and hashed passwords
+    import hashlib
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    
+    if user and (user['password'] == password or user['password'] == hashed_password):
         payload = {
             'user_id': user['id'],
             'exp': datetime.utcnow() + timedelta(hours=24)

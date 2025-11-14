@@ -402,7 +402,9 @@ function updateHumanKPIs(humanData) {
     document.getElementById('humanStudentCount').textContent = humanData.avg_student_count || 0;
     document.getElementById('humanStaffCount').textContent = humanData.avg_staff_count || 0;
     
-    const emissions = (humanData.total_emissions || 0).toFixed(2);
+    // Convert to number and handle string values
+    const emissionsValue = parseFloat(humanData.total_emissions) || 0;
+    const emissions = emissionsValue.toFixed(2);
     console.log('Setting humanTotalEmissions to:', emissions);
     document.getElementById('humanTotalEmissions').textContent = emissions;
 }
@@ -414,20 +416,30 @@ function updateCumulativeStats() {
         .then(data => {
             console.log('📊 Cumulative stats:', data);
             
-            if (data.total_emissions !== undefined) {
-                document.getElementById('cumulativeTotalEmissions').textContent = data.total_emissions.toFixed(2);
+            // Check if elements exist before updating
+            const totalEmissionsEl = document.getElementById('cumulativeTotalEmissions');
+            if (totalEmissionsEl && data.total_emissions !== undefined) {
+                totalEmissionsEl.textContent = data.total_emissions.toFixed(2);
             }
-            if (data.total_records !== undefined) {
-                document.getElementById('cumulativeDays').textContent = data.total_records;
+            
+            const daysEl = document.getElementById('cumulativeDays');
+            if (daysEl && data.total_records !== undefined) {
+                daysEl.textContent = data.total_records;
             }
-            if (data.average_population !== undefined) {
-                document.getElementById('cumulativeAvgPopulation').textContent = data.average_population;
+            
+            const avgPopEl = document.getElementById('cumulativeAvgPopulation');
+            if (avgPopEl && data.average_population !== undefined) {
+                avgPopEl.textContent = data.average_population;
             }
-            if (data.average_students !== undefined) {
-                document.getElementById('cumulativeAvgStudents').textContent = data.average_students;
+            
+            const avgStudentsEl = document.getElementById('cumulativeAvgStudents');
+            if (avgStudentsEl && data.average_students !== undefined) {
+                avgStudentsEl.textContent = data.average_students;
             }
-            if (data.average_staff !== undefined) {
-                document.getElementById('cumulativeAvgStaff').textContent = data.average_staff;
+            
+            const avgStaffEl = document.getElementById('cumulativeAvgStaff');
+            if (avgStaffEl && data.average_staff !== undefined) {
+                avgStaffEl.textContent = data.average_staff;
             }
         })
         .catch(error => {
