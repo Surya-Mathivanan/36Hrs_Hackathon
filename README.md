@@ -24,6 +24,17 @@ A full-stack web application for tracking and analyzing carbon emissions at KIT 
 - **Visualization**: Chart.js
 - **Authentication**: Flask Sessions (development-only plain-text passwords)
 
+
+## Images
+![alt text](<Documents/images/Screenshot 2025-11-15 113759.png>)
+![alt text](<Documents/images/Screenshot 2025-11-15 113837.png>)
+![alt text](<Documents/images/Screenshot 2025-11-15 113858.png>)
+![alt text](<Documents/images/Screenshot 2025-11-15 113916.png>)
+![alt text](<Documents/images/Screenshot 2025-11-15 113938.png>)
+![alt text](<Documents/images/Screenshot 2025-11-15 113957.png>)
+![alt text](<Documents/images/Screenshot 2025-11-15 114039.png>)
+![alt text](<Documents/images/Screenshot 2025-11-15 114017.png>)
+
 ## Installation & Setup
 
 ### Prerequisites
