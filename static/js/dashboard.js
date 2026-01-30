@@ -68,13 +68,17 @@ function updateKPIs(kpis) {
     const energyEl = document.getElementById('energySaved');
 
     const totalEmissions = Number(kpis.total_emissions ?? 0);
-    totalEl.textContent = totalEmissions.toFixed(2);
+    if (totalEl) {
+        totalEl.textContent = totalEmissions.toFixed(2);
+    }
 
-    const changeRaw = Number(kpis.percent_change ?? 0);
-    const direction = changeRaw >= 0 ? '↑' : '↓';
-    const changeFormatted = Math.abs(changeRaw).toFixed(1);
-    changeEl.textContent = `${direction} ${changeFormatted}%`;
-    changeEl.style.color = changeRaw > 0 ? '#ff4757' : (changeRaw < 0 ? '#00d4aa' : '#e4e6eb');
+    if (changeEl) {
+        const changeRaw = Number(kpis.percent_change ?? 0);
+        const direction = changeRaw >= 0 ? '↑' : '↓';
+        const changeFormatted = Math.abs(changeRaw).toFixed(1);
+        changeEl.textContent = `${direction} ${changeFormatted}%`;
+        changeEl.style.color = changeRaw > 0 ? '#ff4757' : (changeRaw < 0 ? '#00d4aa' : '#e4e6eb');
+    }
 
     const source = kpis.biggest_source || 'N/A';
     const formattedSource = source

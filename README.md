@@ -24,6 +24,48 @@ A full-stack web application for tracking and analyzing carbon emissions at KIT 
 - **Visualization**: Chart.js
 - **Authentication**: Flask Sessions (development-only plain-text passwords)
 
+## 📁 Clean Project Structure
+
+```
+36Hrs_Hackathon-main/
+├── 📄 Core Application Files
+│   ├── app.py                          # Main Flask application (27KB)
+│   ├── .env                            # Environment variables (DB credentials)
+│   ├── .gitignore                      # Git ignore rules
+│   ├── pyproject.toml                  # Python project configuration
+│   └── README.md                       # Project documentation
+│
+├── 🛠️ Utility Scripts
+│   ├── add_emission_factor.py          # Adds human_daily emission factor to DB
+│   ├── test_human_calculations.py      # Comprehensive calculation tests
+│   └── verify_data.py                  # Quick verification script
+│
+├── 🗄️ database/
+│   ├── schema.sql                      # Main database schema
+│   ├── human_population_schema.sql     # Human emissions table schema
+│   └── init_db.py                      # Database initialization script
+│
+├── 📊 Documents/
+│   ├── activity_data_sample.csv        # Sample data for testing
+│   ├── Hackathon Idea Submission.pdf   # Project submission
+│   ├── Hackathon Idea Submission.pptx  # Presentation
+│   └── Project Specification...pdf     # Original requirements
+│
+├── 🎨 static/
+│   ├── css/
+│   │   └── style.css                   # Application styles (13KB)
+│   └── js/
+│       ├── dashboard.js                # Dashboard logic (22KB)
+│       └── data_input.js               # Data input form logic (7KB)
+│
+└── 🌐 templates/
+    ├── base.html                       # Base template
+    ├── login.html                      # Login page
+    ├── dashboard.html                  # Dashboard view
+    └── data_input.html                 # Data entry form
+```
+
+
 
 ## Images
 ![alt text](<Documents/images/Screenshot 2025-11-15 113759.png>)
