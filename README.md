@@ -1,255 +1,142 @@
 # Campus Carbon Footprint Analyzer
 
-A full-stack web application for tracking and analyzing carbon emissions at KIT - Kalaignar Karunanidhi Institute of Technology. Built in support of UN Sustainable Development Goal 13: Climate Action.
+A full-stack web application for tracking and analyzing campus carbon emissions.  
+**Backend**: Django REST Framework | **Frontend**: React + Vite | **Database**: PostgreSQL
 
-## Features
+---
 
-### Public Dashboard (No Login Required)
-- **Interactive KPI Cards**: View total emissions, percentage change, biggest emission source, and total energy consumed
-- **Emissions Trend Chart**: Line chart showing monthly emissions over time
-- **Source Breakdown**: Donut chart displaying emissions by source (Electricity, Transport, Canteen, Waste)
-- **Year-over-Year Comparison**: Grouped bar chart comparing current vs previous year
-- **Smart Recommendations**: AI-driven suggestions based on emission patterns
-
-### Admin Portal (Login Required)
-- **Secure Authentication**: Password-protected admin access
-- **Data Input Form**: Easy-to-use interface for entering daily consumption data
-- **Emission Factors Reference**: Built-in table showing conversion factors
-
-## Technology Stack
-
-- **Backend**: Python Flask
-- **Database**: MySQL
-- **Frontend**: Flask Templates (Jinja2), HTML, CSS, JavaScript
-- **Visualization**: Chart.js
-- **Authentication**: Flask Sessions (development-only plain-text passwords)
-
-## 📁 Clean Project Structure
+## 🏗️ Project Structure
 
 ```
 36Hrs_Hackathon-main/
-├── 📄 Core Application Files
-│   ├── app.py                          # Main Flask application (27KB)
-│   ├── .env                            # Environment variables (DB credentials)
-│   ├── .gitignore                      # Git ignore rules
-│   ├── pyproject.toml                  # Python project configuration
-│   └── README.md                       # Project documentation
+├── backend/                   # Django REST API
+│   ├── core/                  # Django project settings, URLs
+│   ├── api/                   # App: models, views, serializers, URLs
+│   │   └── management/commands/seed_data.py
+│   ├── .env                   # Backend environment variables
+│   ├── requirements.txt
+│   └── manage.py
 │
-├── 🛠️ Utility Scripts
-│   ├── add_emission_factor.py          # Adds human_daily emission factor to DB
-│   ├── test_human_calculations.py      # Comprehensive calculation tests
-│   └── verify_data.py                  # Quick verification script
-│
-├── 🗄️ database/
-│   ├── schema.sql                      # Main database schema
-│   ├── human_population_schema.sql     # Human emissions table schema
-│   └── init_db.py                      # Database initialization script
-│
-├── 📊 Documents/
-│   ├── activity_data_sample.csv        # Sample data for testing
-│   ├── Hackathon Idea Submission.pdf   # Project submission
-│   ├── Hackathon Idea Submission.pptx  # Presentation
-│   └── Project Specification...pdf     # Original requirements
-│
-├── 🎨 static/
-│   ├── css/
-│   │   └── style.css                   # Application styles (13KB)
-│   └── js/
-│       ├── dashboard.js                # Dashboard logic (22KB)
-│       └── data_input.js               # Data input form logic (7KB)
-│
-└── 🌐 templates/
-    ├── base.html                       # Base template
-    ├── login.html                      # Login page
-    ├── dashboard.html                  # Dashboard view
-    └── data_input.html                 # Data entry form
+└── frontend/                  # React + Vite app
+    ├── src/
+    │   ├── context/AuthContext.jsx
+    │   ├── services/api.js
+    │   ├── components/Sidebar.jsx
+    │   ├── pages/
+    │   │   ├── DashboardPage.jsx
+    │   │   ├── LoginPage.jsx
+    │   │   └── DataInputPage.jsx
+    │   ├── App.jsx
+    │   └── index.css
+    ├── .env
+    └── vite.config.js
 ```
 
+---
 
+## ⚙️ Backend Setup (Django)
 
-## Images
-![alt text](<Documents/images/Screenshot 2025-11-15 113759.png>)
-![alt text](<Documents/images/Screenshot 2025-11-15 113837.png>)
-![alt text](<Documents/images/Screenshot 2025-11-15 113858.png>)
-![alt text](<Documents/images/Screenshot 2025-11-15 113916.png>)
-![alt text](<Documents/images/Screenshot 2025-11-15 113938.png>)
-![alt text](<Documents/images/Screenshot 2025-11-15 113957.png>)
-![alt text](<Documents/images/Screenshot 2025-11-15 114039.png>)
-![alt text](<Documents/images/Screenshot 2025-11-15 114017.png>)
-
-## Installation & Setup
-
-### Prerequisites
-- Python 3.11+
-- MySQL Server (e.g. 8.x)
-
-### Step 1: Install Dependencies
+### 1. Install dependencies
 ```bash
-pip install flask flask-cors PyJWT mysql-connector-python python-dotenv
+cd backend
+pip install -r requirements.txt
 ```
 
-### Step 2: Configure Database Connection
-Create a `.env` file in the project root (or edit the existing one) with your MySQL credentials:
+### 2. Configure `.env`
+Edit `backend/.env` with your PostgreSQL URL:
+```env
+DATABASE_URL=postgresql://user:password@host:5432/campus_carbon
+SECRET_KEY=your-long-random-secret-key
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000
+```
+
+### 3. Run migrations
 ```bash
-DB_HOST=localhost
-DB_USER=your_mysql_user
-DB_PASSWORD=your_mysql_password
-DB_NAME=campus_carbon
-DB_PORT=3306
-SESSION_SECRET=replace_with_a_long_random_string
-FLASK_DEBUG=True
-PORT=5000
+python manage.py makemigrations api
+python manage.py migrate
 ```
 
-Make sure the database exists in MySQL:
-```sql
-CREATE DATABASE IF NOT EXISTS campus_carbon;
-```
-
-### Step 3: Initialize Database Schema and Sample Data
+### 4. Seed data (emission factors + admin user + sample data)
 ```bash
-python database/init_db.py
+python manage.py seed_data
 ```
+Default admin credentials: **admin / admin123**
 
-This will:
-- Create required tables in the configured MySQL database: `users`, `activity_data`, `emission_factors`
-- Insert emission factors
-- Create default admin user
-- Populate sample data
-
-### Step 4: Run the Application
+### 5. Start the backend
 ```bash
-python app.py
+python manage.py runserver
+```
+Backend will be running at **http://localhost:8000**
+
+---
+
+## 🎨 Frontend Setup (React)
+
+### 1. Install dependencies
+```bash
+cd frontend
+npm install
 ```
 
-The application will be available at: `http://localhost:5000`
-
-## Default Credentials
-
-- **Username**: admin
-- **Password**: admin123
-
-**Important**: Change these credentials in production and switch to password hashing!
-
-## Database Schema
-
-### users
-- `id`: Primary key
-- `username`: Unique username
-- `password_hash`: Hashed password
-
-### activity_data
-- `id`: Primary key
-- `date`: Date of data entry (YYYY-MM-DD)
-- `source_type`: Type of emission source (electricity, bus_diesel, canteen_lpg, waste_landfill)
-- `raw_value`: Consumption amount
-- `unit`: Unit of measurement (kWh, Liters, kg)
-
-### emission_factors
-- `id`: Primary key
-- `source_type`: Type of emission source
-- `factor`: CO₂e conversion factor
-- `factor_unit`: Unit of the factor
-
-## Emission Factors (Pre-populated)
-
-| Source Type | Factor | Unit |
-|-------------|--------|------|
-| Electricity | 0.708 | kg CO₂e/kWh |
-| Bus Diesel | 2.68 | kg CO₂e/Liter |
-| Canteen LPG | 2.93 | kg CO₂e/kg |
-| Waste (Landfill) | 1.25 | kg CO₂e/kg |
-
-## API Endpoints
-
-### Public Endpoints
-- `GET /`: Dashboard page
-- `GET /api/dashboard?start_date=YYYY-MM-DD&end_date=YYYY-MM-DD`: Get dashboard data
-- `GET /api/recommendations`: Get emission reduction recommendations
-
-### Protected Endpoints (Require Login)
-- `POST /login`: Admin login
-- `GET /data-input`: Data input page
-- `POST /api/data`: Add new activity data
-- `GET /logout`: Logout
-
-## Calculation Logic
-
-Total Emissions (Tonnes CO₂e) = (raw_value × emission_factor) / 1000
-
-## Project Structure
-
-```
-.
-├── app.py                      # Main Flask application
-├── database/
-│   ├── schema.sql             # Database schema (MySQL tables)
-│   └── init_db.py             # Database initialization script
-├── templates/
-│   ├── base.html              # Base template with navigation
-│   ├── dashboard.html         # Public dashboard
-│   ├── login.html             # Admin login page
-│   └── data_input.html        # Admin data input page
-├── static/
-│   ├── css/
-│   │   └── style.css          # Dark-themed styling
-│   └── js/
-│       ├── dashboard.js       # Dashboard charts and API calls
-│       └── data_input.js      # Data input form handling
-├── .env                       # Environment configuration (MySQL, Flask)
-└── README.md
+### 2. Configure `.env` (optional, default is localhost:8000)
+```env
+VITE_API_URL=http://localhost:8000/api
 ```
 
-## Usage Guide
+### 3. Start the dev server
+```bash
+npm run dev
+```
+Frontend will be at **http://localhost:5173**
 
-### For Public Users (Students/Guests)
-1. Visit the homepage to view the dashboard
-2. Use the time period selector to filter data
-3. View KPIs, charts, and recommendations
-4. No login required
+---
 
-### For Admins (Campus Staff)
-1. Click "Admin Login" in the navigation
-2. Enter credentials (admin/admin123)
-3. Navigate to "Data Input"
-4. Fill in the form:
-   - Select date
-   - Choose source type
-   - Enter raw value
-   - Unit auto-selects based on source type
-5. Click "Add Data"
-6. Data will appear in dashboard after submission
+## 🔌 API Endpoints
 
-## Future Enhancements (Phase 2)
+### Public
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/dashboard/` | Full dashboard data with date filters |
+| GET | `/api/recommendations/` | Emission reduction recommendations |
+| GET | `/api/emission_factors/` | List emission conversion factors |
+| GET | `/api/human_cumulative_stats/` | All-time human emission stats |
 
-- CSV bulk upload functionality
-- AI/ML predictive forecasting using SARIMA model
-- OCR-based bill scanning for automated data entry
-- Data export functionality
-- Enhanced filtering and date range options
-- Mobile responsive improvements
+### Auth
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/login/` | Login → returns JWT access + refresh tokens |
+| POST | `/api/auth/refresh/` | Refresh access token |
+| GET | `/api/auth/me/` | Current user info |
 
-## Support for UN SDG 13
+### Protected (Bearer JWT required)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/data/` | Add single activity record |
+| POST | `/api/human_data/` | Add/update human population data |
+| POST | `/api/upload_csv/` | Bulk insert records via JSON |
 
-This application directly supports **UN Sustainable Development Goal 13: Climate Action** by:
-- Providing transparency in campus carbon emissions
-- Enabling data-driven decision making
-- Identifying key areas for improvement
-- Tracking progress over time
-- Promoting awareness and education
+---
 
-## Security Notes
+## 🔐 Security Notes
 
-- Current demo implementation stores passwords in plain text for the `users` table (development only)
-- In production, switch to Werkzeug (or similar) secure password hashing and update the login logic accordingly
-- Session management with Flask sessions
-- Input validation on all forms
-- SQL injection protection with parameterized queries
+- JWT tokens (access: 24h, refresh: 7d) stored in `localStorage`
+- Django `authenticate()` uses bcrypt-hashed passwords via `create_superuser`
+- CORS restricted to configured origins
+- SQL injection protected via Django ORM
+- Change `SECRET_KEY` and `DEBUG=False` before any production deployment
 
-## License
+---
 
-Built for KIT - Kalaignar Karunanidhi Institute of Technology
+## 📦 Tech Stack
 
-## Contact
-
-For issues or questions, contact the campus administration.
+| Layer | Technology |
+|-------|-----------|
+| Backend | Python 3.11+, Django 4.2+, DRF 3.14+ |
+| Auth | DRF SimpleJWT |
+| Database | PostgreSQL (psycopg2-binary) |
+| Frontend | React 18, Vite |
+| Charts | Chart.js + react-chartjs-2 |
+| HTTP Client | Axios |
+| Routing | React Router DOM |

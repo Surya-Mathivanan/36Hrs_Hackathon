@@ -1,24 +1,44 @@
+# Python / Django
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
+*.pyo
+*.pyd
 .Python
-.pythonlibs/
+*.egg
 *.egg-info/
 dist/
 build/
-
-*.db
-*.sqlite
-*.sqlite3
-
-.env
-.venv
-env/
+.eggs/
+*.so
+.venv/
 venv/
+env/
+ENV/
 
-instance/
-.webassets-cache
+# Django
+backend/.env
+backend/staticfiles/
+backend/db.sqlite3
+backend/*.log
 
+# Env files
+.env
+*.env
+!backend/.env.example
+!frontend/.env.example
+
+# Node / React
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
 .DS_Store
-*.log
+Thumbs.db
+
+# Migrations (optional — keep if you want reproducible schema)
+# backend/api/migrations/
