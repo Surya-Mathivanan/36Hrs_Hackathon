@@ -6,22 +6,6 @@ A comprehensive full-stack web application for tracking, analyzing, and reducing
 
 ---
 
-## 📖 Table of Contents
-
-1. [Project Purpose & Vision](#project-purpose--vision)
-2. [Why This Project Exists](#why-this-project-exists)
-3. [System Architecture](#system-architecture)
-4. [Technology Stack Deep Dive](#technology-stack-deep-dive)
-5. [Database Design & Rationale](#database-design--rationale)
-6. [Backend Implementation Details](#backend-implementation-details)
-7. [Frontend Implementation Details](#frontend-implementation-details)
-8. [Authentication & Security](#authentication--security)
-9. [API Documentation](#api-documentation)
-10. [Emission Calculation Methodology](#emission-calculation-methodology)
-11. [Setup & Installation](#setup--installation)
-12. [Deployment Guide](#deployment-guide)
-
----
 
 ## Project Purpose & Vision
 
@@ -64,6 +48,18 @@ This platform provides:
 - **Human Emissions Module**: Unique tracking of metabolic CO₂ from campus population
 
 ---
+
+---
+## OutPut Images
+![alt text](assets/HomePage.png)
+
+![alt text](<assets/admin page 1.png>)
+
+![alt text](<assets/csv file page.png>)
+
+---
+
+
 
 ## System Architecture
 
